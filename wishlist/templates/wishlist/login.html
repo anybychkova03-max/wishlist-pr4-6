@@ -1,0 +1,18 @@
+{% extends "wishlist/base.html" %}
+
+{% block title %}Вход — WishList{% endblock %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="form-container">
+        <h1>С возвращением ♡</h1>
+        <p>Войди в свой аккаунт, чтобы увидеть желания.</p>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="button button-primary">Войти</button>
+        </form>
+        <p>Ещё нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,247 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Категории — WishList</title>
+    <link rel="stylesheet" href="{% static 'wishlist/style.css' %}">
+    <style>
+        .categories-nav {
+            width: 100%;
+            background: rgba(255,255,255,.94);
+            border-bottom: 1px solid var(--border);
+        }
+        .categories-nav-inner {
+            max-width: 1450px;
+            min-height: 70px;
+            margin: auto;
+            padding: 12px 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+        }
+        .categories-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 27px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .categories-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .categories-links a {
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .categories-links a:hover {
+            color: var(--lavender);
+        }
+        .categories-nav .button {
+            white-space: nowrap;
+            font-size: 12px;
+            padding: 11px 17px;
+        }
+        .categories-content {
+            width: calc(100% - 48px);
+            max-width: 1200px;
+            margin: 55px auto;
+        }
+        .categories-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+        .categories-heading h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            margin: 8px 0;
+        }
+        .categories-heading p {
+            margin: 0;
+        }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+        }
+        .category-card {
+            min-width: 0;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 19px;
+            padding: 23px;
+            box-shadow: var(--shadow);
+            transition: transform .2s;
+        }
+        .category-card:hover {
+            transform: translateY(-3px);
+        }
+        .category-icon {
+            width: 43px;
+            height: 43px;
+            display: grid;
+            place-items: center;
+            background: var(--lavender-light);
+            border-radius: 14px;
+            color: var(--lavender-dark);
+            font-size: 21px;
+            margin-bottom: 16px;
+        }
+        .category-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            margin: 0 0 7px;
+        }
+        .category-description {
+            color: var(--muted);
+            font-size: 13px;
+            min-height: 38px;
+            margin: 0;
+        }
+        .category-actions {
+            display: flex;
+            gap: 18px;
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .delete-link {
+            color: #bd7185;
+        }
+        .empty-message {
+            grid-column: 1 / -1;
+            background: var(--lavender-light);
+            padding: 25px;
+            border-radius: 16px;
+            color: var(--muted);
+        }
+        .categories-footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+        @media (max-width: 850px) {
+            .categories-nav-inner {
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 15px;
+            }
+            .category-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 550px) {
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+            .categories-content {
+                margin: 30px auto;
+            }
+            .categories-heading h1 {
+                font-size: 29px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <a class="brand" href="{% url 'home' %}">
+        wish<span>list</span>
+    </a>
+
+    <nav class="main-nav">
+        <a href="{% url 'home' %}">Главная</a>
+        <a href="{% url 'wishlist_list' %}">Мои желания</a>
+        <a class="active" href="{% url 'category_list' %}">Категории</a>
+        <a href="{% url 'purchased_list' %}">Купленные</a>
+    </nav>
+
+    <a class="button button-primary" href="{% url 'add_item' %}">
+        + Добавить желание
+    </a>
+    
+    <div class="auth-nav">
+    <span>Привет, {{ user.username }}!</span>
+    <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="nav-cta">Выйти</button>
+    </form>
+</div>
+</header>
+
+<div class="categories-content">
+    <div class="categories-heading">
+        <div>
+            <p class="muted" style="letter-spacing:2px;font-size:10px;font-weight:800;">
+                РАЗЛОЖИ МЕЧТЫ ПО ПОЛОЧКАМ
+            </p>
+            <h1>Мои категории ✧</h1>
+            <p class="muted">Создавай уютный порядок в своём списке желаний.</p>
+        </div>
+        <a class="button" href="{% url 'add_category' %}">+ Добавить категорию</a>
+    </div>
+
+    <div class="category-grid">
+        {% for category in categories %}
+            <article class="category-card">
+                <div class="category-icon">
+    {% if "Дом" in category.name %}⌂
+    {% elif "Косметика" in category.name %}✿
+    {% elif "Одежда" in category.name %}♡
+    {% elif "Питомец" in category.name %}ᗢ
+    {% elif "Техника" in category.name %}⌘
+    {% elif "Хобби" in category.name %}✎
+    {% elif "Книги" in category.name %}▥
+    {% elif "Путешествия" in category.name %}↗
+    {% elif "Спорт" in category.name %}⌁
+    {% elif "Украшения" in category.name %}✧
+    {% elif "Обучение" in category.name %}§
+    {% elif "Еда" in category.name %}❊
+    {% else %}♡
+    {% endif %}
+</div>
+                <h2>{{ category.name }}</h2>
+                <p class="category-description">
+                    {{ category.description|default:"Пока без описания" }}
+                </p>
+                <div class="category-actions">
+    <a class="action-button edit-button"
+       href="{% url 'edit_category' category.id %}">
+        ✎ Изменить
+    </a>
+
+    <a class="action-button delete-button"
+       href="{% url 'delete_category' category.id %}">
+        ✕ Удалить
+    </a>
+</div>
+            </article>
+        {% empty %}
+            <div class="empty-message">
+                Здесь пока нет категорий. Создай первую ♡
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<footer class="categories-footer">
+    WishList · Маленькие желания, большие радости ♡
+</footer>
+
+</body>
+</html>

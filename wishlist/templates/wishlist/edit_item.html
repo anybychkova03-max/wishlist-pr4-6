@@ -1,0 +1,120 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование желания — WishList</title>
+    <link rel="stylesheet" href="{% static 'wishlist/style.css' %}">
+</head>
+<body>
+
+<header class="site-header">
+    <a class="brand" href="{% url 'home' %}">wish<span>list</span></a>
+    <nav class="main-nav">
+        <a href="{% url 'home' %}">Главная</a>
+        <a href="{% url 'wishlist_list' %}">Мои желания</a>
+        <a href="{% url 'category_list' %}">Категории</a>
+        <a href="{% url 'purchased_list' %}">Купленные</a>
+    </nav>
+</header>
+
+<main class="page-shell form-shell">
+    <section class="form-heading">
+        <span class="eyebrow">МЕЧТЫ МОЖНО МЕНЯТЬ</span>
+        <h1>Редактировать <em>желание</em> ♡</h1>
+        <p>Обнови информацию о том, что хочешь приобрести.</p>
+    </section>
+
+    <form class="wish-form" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-field">
+            <label for="title">Название товара</label>
+            <input
+                id="title"
+                type="text"
+                name="title"
+                value="{{ item.title }}"
+                required
+            >
+        </div>
+
+        <div class="form-field">
+            <label for="description">Описание</label>
+            <textarea
+                id="description"
+                name="description"
+                rows="4"
+            >{{ item.description }}</textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-field">
+                <label for="price">Стоимость, ₽</label>
+                <input
+                    id="price"
+                    type="number"
+                    name="price"
+                    step="0.01"
+                    min="0"
+                    value="{{ item.price }}"
+                    required
+                >
+            </div>
+
+            <div class="form-field">
+                <label for="category">Категория</label>
+                <select id="category" name="category" required>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}"
+                            {% if item.category_id == category.id %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-field">
+    <label for="image">Фотография</label>
+
+    {% if item.image %}
+        <p>Текущая фотография:</p>
+        <img src="{{ item.image.url }}" alt="{{ item.title }}"
+             style="width: 140px; height: 140px; object-fit: contain; border-radius: 12px;">
+    {% endif %}
+
+    <input id="image" type="file" name="image" accept="image/*">
+    <small>Выбери новое изображение, чтобы добавить или заменить фотографию.</small>
+</div>
+        <div class="form-field">
+            <label for="priority">Насколько сильно хочется?</label>
+            <select id="priority" name="priority">
+                <option value="high" {% if item.priority == "high" %}selected{% endif %}>
+                    Очень хочу
+                </option>
+                <option value="medium" {% if item.priority == "medium" %}selected{% endif %}>
+                    Будет приятно
+                </option>
+                <option value="low" {% if item.priority == "low" %}selected{% endif %}>
+                    Когда-нибудь
+                </option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button class="button button-primary" type="submit">
+                Сохранить изменения ♡
+            </button>
+            <a class="text-link" href="{% url 'wishlist_list' %}">
+                Отмена
+            </a>
+        </div>
+    </form>
+</main>
+
+<footer class="site-footer">Пусть мечты становятся планами ♡</footer>
+
+</body>
+</html>

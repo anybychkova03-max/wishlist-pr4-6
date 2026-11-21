@@ -1,0 +1,61 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование категории — WishList</title>
+    <link rel="stylesheet" href="{% static 'wishlist/style.css' %}">
+</head>
+<body>
+
+<header class="site-header">
+    <a class="brand" href="{% url 'home' %}">wish<span>list</span></a>
+    <nav class="main-nav">
+        <a href="{% url 'home' %}">Главная</a>
+        <a href="{% url 'wishlist_list' %}">Мои желания</a>
+        <a href="{% url 'category_list' %}">Категории</a>
+        <a href="{% url 'purchased_list' %}">Купленные</a>
+    </nav>
+</header>
+
+<main class="page-shell form-shell">
+    <section class="form-heading">
+        <span class="eyebrow">НЕБОЛЬШИЕ ИЗМЕНЕНИЯ</span>
+        <h1>Редактировать <em>категорию</em> ✧</h1>
+        <p>Обнови название или описание своей категории.</p>
+    </section>
+
+    <form class="wish-form" method="POST">
+        {% csrf_token %}
+
+        <div class="form-field">
+            <label for="name">Название категории</label>
+            <input
+                id="name"
+                type="text"
+                name="name"
+                value="{{ category.name }}"
+                required
+            >
+        </div>
+
+        <div class="form-field">
+            <label for="description">Описание</label>
+            <textarea
+                id="description"
+                name="description"
+                rows="4"
+            >{{ category.description }}</textarea>
+        </div>
+
+        <div class="form-actions">
+            <button class="button" type="submit">Сохранить изменения</button>
+            <a class="text-link" href="{% url 'category_list' %}">Отмена</a>
+        </div>
+    </form>
+</main>
+
+</body>
+</html>

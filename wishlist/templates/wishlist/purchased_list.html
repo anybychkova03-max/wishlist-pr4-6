@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Исполненные желания — WishList</title>
+    <link rel="stylesheet" href="{% static 'wishlist/style.css' %}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" href="{% url 'home' %}">
+        wish<span>list</span>
+    </a>
+
+    <nav class="main-nav">
+        <a href="{% url 'home' %}">Главная</a>
+        <a href="{% url 'wishlist_list' %}">Мои желания</a>
+        <a href="{% url 'category_list' %}">Категории</a>
+        <a class="active" href="{% url 'purchased_list' %}">Купленные</a>
+    </nav>
+
+    <a class="button button-primary" href="{% url 'add_item' %}">
+        + Добавить желание
+    </a>
+    
+    <div class="auth-nav">
+    <span>Привет, {{ user.username }}!</span>
+    <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="nav-cta">Выйти</button>
+    </form>
+</div>
+</header>
+<main class="page-shell">
+    <section class="page-intro">
+        <span class="eyebrow">ПОВОД ПОРАДОВАТЬСЯ</span>
+        <h1>Исполненные <em>мечты ♡</em></h1>
+        <p>Здесь собраны желания, которые уже стали реальностью.</p>
+    </section>
+    <section class="product-grid wishlist-grid">
+        {% for item in items %}
+        <article class="product-card">
+            <div class="product-image">
+                {% if item.image %}<img src="{{ item.image.url }}" alt="{{ item.title }}">{% else %}<span class="image-placeholder">✿</span>{% endif %}
+                <span class="bought-ribbon">Исполнено</span>
+            </div>
+            <div class="product-info">
+                <span class="product-category">{{ item.category|default:"Без категории" }}</span>
+                <h3>{{ item.title }}</h3>
+                <div class="product-bottom"><strong>{{ item.price }} ₽</strong><span class="priority priority-{{ item.priority }}">Куплено</span></div>
+                <div class="card-actions">
+    <a class="action-button edit-button"
+       href="{% url 'edit_item' item.id %}">
+        ✎ Изменить
+    </a>
+
+    <form method="POST" action="{% url 'return_item' item.id %}">
+        {% csrf_token %}
+        <button type="submit" class="action-button return-button">
+            ↶ Вернуть в желания
+        </button>
+    </form>
+</div>
+            </div>
+        </article>
+        {% empty %}
+        <div class="empty-state"><span>✿</span><h3>Пока нет исполненных желаний</h3><p>Когда отметишь товар как купленный, он появится здесь.</p></div>
+        {% endfor %}
+    </section>
+</main>
+<footer class="site-footer">Ты заслуживаешь маленьких радостей ♡</footer>
+</body>
+</html>

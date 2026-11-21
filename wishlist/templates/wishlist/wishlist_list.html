@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои желания — WishList</title>
+    <link rel="stylesheet" href="{% static 'wishlist/style.css' %}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" href="{% url 'home' %}">wish<span>list</span></a>
+    <nav class="main-nav">
+        <a href="{% url 'home' %}">Главная</a>
+        <a class="active" href="{% url 'wishlist_list' %}">Мои желания</a>
+        <a href="{% url 'category_list' %}">Категории</a>
+        <a href="{% url 'purchased_list' %}">Купленные</a>
+    </nav>
+    <a class="nav-cta" href="{% url 'add_item' %}">+ Добавить желание</a>
+
+    <div class="auth-nav">
+    <span>Привет, {{ user.username }}!</span>
+    <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="nav-cta">Выйти</button>
+    </form>
+</div>
+</header>
+
+<main class="page-shell">
+    <section class="page-intro">
+        <span class="eyebrow">ТВОЙ ЛИЧНЫЙ СПИСОК</span>
+        <h1>Мои желания <em>♡</em></h1>
+        <p>Все идеи и вещи, которые однажды сделают тебя чуточку счастливее.</p>
+        <a class="button button-primary" href="{% url 'add_item' %}">+ Добавить желание</a>
+    </section>
+
+    <section class="product-grid wishlist-grid">
+        {% for item in items %}
+        <article class="product-card">
+            <div class="product-image">
+    {% if item.image %}
+        <img src="{{ item.image.url }}" alt="{{ item.title }}">
+    {% else %}
+        <div class="image-placeholder">
+            <span class="placeholder-heart">♡</span>
+            <strong>В списке желаний</strong>
+            <small>Однажды это будет моим</small>
+        </div>
+    {% endif %}
+    {% if item.status == "bought" %}
+        <span class="bought-ribbon">Исполнено</span>
+    {% endif %}
+</div>
+            <div class="product-info">
+                <span class="product-category">{{ item.category|default:"Без категории" }}</span>
+                <h3>{{ item.title }}</h3>
+                {% if item.description %}<p class="product-description">{{ item.description }}</p>{% endif %}
+                <div class="product-bottom">
+                    <strong>{{ item.price }} ₽</strong>
+                    <span class="priority priority-{{ item.priority }}">{{ item.get_priority_display }}</span>
+                </div>
+                
+<div class="card-actions">
+    <a class="action-button edit-button"
+       href="{% url 'edit_item' item.id %}">
+        ✎ Изменить
+    </a>
+
+    <a class="action-button delete-button"
+       href="{% url 'delete_item' item.id %}">
+        ✕ Удалить
+    </a>
+
+    {% if item.status != "bought" %}
+        <form method="POST" action="{% url 'mark_bought' item.id %}">
+            {% csrf_token %}
+            <button type="submit" class="action-button bought-button">
+                ✓ Исполнено
+            </button>
+        </form>
+    {% endif %}
+
+    {% if item.url %}
+        <a class="action-button shop-button"
+           href="{{ item.url }}"
+           target="_blank"
+           rel="noopener">
+            ↗ Магазин
+        </a>
+    {% endif %}
+</div>
+
+            </div>
+        </article>
+        {% empty %}
+        <div class="empty-state">
+            <span>♡</span><h3>Список пока пуст</h3>
+            <p>Добавь сюда то, о чём давно мечтаешь.</p>
+            <a class="button button-primary" href="{% url 'add_item' %}">Добавить первое желание</a>
+        </div>
+        {% endfor %}
+    </section>
+</main>
+<footer class="site-footer">Каждая мечта начинается с желания ♡</footer>
+</body>
+</html>

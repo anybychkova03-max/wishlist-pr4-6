@@ -1,0 +1,104 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Удаление категории — WishList</title>
+    <link rel="stylesheet" href="{% static 'wishlist/style.css' %}">
+    <style>
+        .delete-card {
+            max-width: 560px;
+            margin: 65px auto;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+        .delete-icon {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 20px;
+            display: grid;
+            place-items: center;
+            border-radius: 20px;
+            background: #f8e9ed;
+            color: #bd7185;
+            font-size: 29px;
+        }
+        .delete-card h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 30px;
+        }
+        .delete-card p {
+            color: var(--muted);
+            line-height: 1.7;
+        }
+        .delete-actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 22px;
+            flex-wrap: wrap;
+            margin-top: 28px;
+        }
+        .delete-button {
+            border: 0;
+            border-radius: 30px;
+            padding: 13px 22px;
+            background: #bd7185;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .delete-button:hover {
+            background: #a95e73;
+        }
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <a class="brand" href="{% url 'home' %}">wish<span>list</span></a>
+    <nav class="main-nav">
+        <a href="{% url 'home' %}">Главная</a>
+        <a href="{% url 'wishlist_list' %}">Мои желания</a>
+        <a href="{% url 'category_list' %}">Категории</a>
+        <a href="{% url 'purchased_list' %}">Купленные</a>
+    </nav>
+</header>
+
+<main class="page-shell">
+    <section class="delete-card">
+        <div class="delete-icon">♡</div>
+
+        <span class="eyebrow">ПОДТВЕРЖДЕНИЕ ДЕЙСТВИЯ</span>
+        <h1>Удалить категорию?</h1>
+
+        <p>
+            Ты действительно хочешь удалить категорию
+            <strong>«{{ category.name }}»</strong>?
+        </p>
+
+        <p>Это действие нельзя будет отменить.</p>
+
+        <div class="delete-actions">
+            <form method="POST">
+                {% csrf_token %}
+                <button class="delete-button" type="submit">
+                    Да, удалить
+                </button>
+            </form>
+
+            <a class="text-link" href="{% url 'category_list' %}">
+                Нет, вернуться
+            </a>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>
